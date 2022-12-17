@@ -1,5 +1,8 @@
+from datetime import time
+
 from scapy.all import *
 from scapy.layers.l2 import Ether
+from scapy.sendrecv import sniff
 
 
 class PacketScanner:
@@ -17,15 +20,18 @@ class PacketScanner:
             return True
 
     def look_for_spec_packet(self, packet):
-        if packet[Ether].dst == "MacAddress" :
+        if packet[Ether].dst == "01:80:c2:00:00:0e":
+            print("Got one")
+            print(time.time() - self.start_time)
+            packet.show()
             self.packet = packet
             self.stop_now = True
 
     def start_sniffer(self):
         self.start_time = time.time()
-        sniff(iface=self.interface, prn=self.look_for_spec_packet, stop_filter=self.stop_sniffer)
+        sniff(iface=self.interface, prn=self.look_for_spec_packet)
 
 
-if __name__=="__main__":
-    runner = PacketScanner
+if __name__ == "__main__":
+    runner = PacketScanner()
     runner.start_sniffer()
